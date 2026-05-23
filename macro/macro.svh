@@ -11,6 +11,16 @@
         end                                           \
     end                                                 
 
+`define PRIM_FF_ARSTB(OUT, IN, ARSTB, CLK, RST_VAL='0)                \
+    always_ff @( posedge CLK or negedge ARSTB) begin : \prim_ff_``OUT \
+        if (~ARSTB) begin                                             \
+            OUT <= RST_VAL;                                           \
+        end                                                           \
+        else begin                                                    \
+            OUT <= IN;                                                \
+        end                                                           \
+    end                                                 
+
 `define PRIM_FF_EN_RST(OUT, IN, EN, RST, CLK, RST_VAL='0) \
     always_ff @( posedge CLK ) begin : \prim_ff_``OUT     \
         if (RST) begin                                    \
