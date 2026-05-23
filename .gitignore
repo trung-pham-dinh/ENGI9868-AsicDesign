@@ -1,0 +1,4 @@
+*.vcd
+*.gtkw
+*run_dir*
+*.drawio.bkp
