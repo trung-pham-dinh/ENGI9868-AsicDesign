@@ -24,9 +24,9 @@ always_comb begin
 end
 `PRIM_FF_ARSTB(packet_written_lv, packet_written_lv_next, arstb, wclk, 1'b0)
 
-pipeline r2w_synchronizer #(
+pipeline #(
     .WIDTH(1)
-) r2w_sync (
+) r2w_synchronizer (
     .clk     (wclk               ),
     .arstb   (arstb              ),
     .data_in (packet_read_lv     ),
@@ -36,10 +36,10 @@ pipeline r2w_synchronizer #(
 edge_detector #(
     .EDGE_TYPE(2) // detect rising edge
 ) r2w_edge_detector (
-    .clk        (wclk               ),
-    .arstb      (arstb              ),
-    .signal_in  (packet_read_lv_sync),
-    .signal_out (packet_read_ps_sync)
+    .clk           (wclk               ),
+    .arstb         (arstb              ),
+    .signal_in     (packet_read_lv_sync),
+    .edge_detected (packet_read_ps_sync)
 );
 
 `PRIM_FF_ARSTB(write_rdy_lv, write_rdy_lv_next, arstb, wclk, 1'b0)
@@ -65,9 +65,9 @@ always_comb begin
 end
 `PRIM_FF_ARSTB(packet_read_lv, packet_read_lv_next, arstb, rclk, 1'b0)
 
-pipeline w2r_synchronizer #(
+pipeline #(
     .WIDTH(1)
-) w2r_sync (
+) w2r_synchronizer (
     .clk     (rclk                  ),
     .arstb   (arstb                 ),
     .data_in (packet_written_lv     ),
@@ -77,10 +77,10 @@ pipeline w2r_synchronizer #(
 edge_detector #(
     .EDGE_TYPE(2) // detect rising edge
 ) w2r_edge_detector (
-    .clk        (rclk                  ),
-    .arstb      (arstb                 ),
-    .signal_in  (packet_written_lv_sync),
-    .signal_out (packet_written_ps_sync)
+    .clk           (rclk                  ),
+    .arstb         (arstb                 ),
+    .signal_in     (packet_written_lv_sync),
+    .edge_detected (packet_written_ps_sync)
 );
 
 `PRIM_FF_ARSTB(read_rdy_lv, read_rdy_lv_next, arstb, rclk, 1'b0)

@@ -1,7 +1,7 @@
 `include "macro.svh"
 
 module pointer #(
-    parameter ADDR_W = 5;
+    parameter ADDR_W = 5
 )(
      input  logic              clk
     ,input  logic              arstb
@@ -13,11 +13,12 @@ module pointer #(
 logic [ADDR_W-1:0] ptr_val_next;
 
 always_comb begin
-    if (ptr_en_lv == 1'b1) {
+    if (ptr_en_lv == 1'b1) begin
         ptr_val_next = (ptr_ld_ps == 1'b1) ? '0 : ptr_val + 1;
-    } else {
+    end 
+    else begin
         ptr_val_next = ptr_val;
-    }
+    end
 end
 
 `PRIM_FF_ARSTB(ptr_val, ptr_val_next, arstb, clk, '0)

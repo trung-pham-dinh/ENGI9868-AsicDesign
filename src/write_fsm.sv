@@ -21,7 +21,7 @@ module write_fsm #(
 typedef enum logic [1:0] {
     WRITE_READY,
     WRITE_EN,
-    WRITE_LOCKED,
+    WRITE_LOCKED
 } wfsm_state_t;
 wfsm_state_t wfsm_state, wfsm_next;
 logic write_en;

@@ -19,7 +19,7 @@ module read_fsm #(
 
 typedef enum logic [0:0] {
     READ_EN,
-    READ_LOCKED,
+    READ_LOCKED
 } rfsm_state_t;
 
 rfsm_state_t rfsm_state, rfsm_next;
@@ -48,9 +48,19 @@ always_comb begin
     read_en_lv = (rfsm_state == READ_EN);
 
     rptr_ld_ps   = read_en_ps;
-    rptr_en_lv   = read_en_lv & ~rfifo_eop_ps;
+    rptr_en_lv   = read_en_lv;
     rfifo_web_lv = ~rptr_en_lv;
     rfifo_meb_lv = ~rptr_en_lv;
+
+    if (osop) begin
+        valid_next = 1'b1;
+    end 
+    else if (oeop) begin
+        valid_next = 1'b0;
+    end
+    else begin
+        valid_next = valid;
+    end
 end
 
 `PRIM_FF_ARSTB(rfsm_state , rfsm_next, arstb, clk, READ_READY)
@@ -65,16 +75,9 @@ edge_detector #(
 );
 
 
-pipeline #(
-    .STAGE_NUM(2),
-    .DATA_W(2)
-) _pipeline (
-    .clk     (clk        ),
-    .arstb   (arstb      ),
-    .data_in ({read_en_ps, read_en_lv}),
-    .data_out({osop      , ovalid})
-);
-`PRIM_FF_ARSTB(oeop, rfifo_eop_ps, arstb, clk, 1'b0)
-
+`PRIM_FF_ARSTB(valid, valid_next, arstb, clk, 1'b0)
+`PRIM_FF_ARSTB(osop  , rptr_ld_ps , arstb, clk, 1'b0)
+assign ovalid = valid | osop;
+assign oeop = read_en_lv & rfifo_eop_ps;
 
 endmodule
