@@ -12,8 +12,12 @@ module synchronizers #(
 
 // Write domain signals
 logic packet_written_lv, packet_written_lv_next;
+logic packet_read_lv_sync, packet_read_ps_sync;
+logic write_rdy_lv_next;
 // Read domain signals
 logic packet_read_lv, packet_read_lv_next;
+logic packet_written_lv_sync, packet_written_ps_sync;
+logic read_rdy_lv_next;
 
 //----------------------
 // Write domain
@@ -25,7 +29,7 @@ end
 `PRIM_FF_ARSTB(packet_written_lv, packet_written_lv_next, arstb, wclk, 1'b0)
 
 pipeline #(
-    .WIDTH(1)
+    .DATA_W(1)
 ) r2w_synchronizer (
     .clk     (wclk               ),
     .arstb   (arstb              ),
@@ -66,7 +70,7 @@ end
 `PRIM_FF_ARSTB(packet_read_lv, packet_read_lv_next, arstb, rclk, 1'b0)
 
 pipeline #(
-    .WIDTH(1)
+    .DATA_W(1)
 ) w2r_synchronizer (
     .clk     (rclk                  ),
     .arstb   (arstb                 ),

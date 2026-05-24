@@ -23,8 +23,9 @@ typedef enum logic [0:0] {
 } rfsm_state_t;
 
 rfsm_state_t rfsm_state, rfsm_next;
-logic read_en;
-logic osop_pipe, oeop_pipe, ovalid_pipe;
+logic valid, valid_next;
+logic read_en_lv;
+logic read_en_ps;
 
 always_comb begin
     case (rfsm_state)
@@ -63,7 +64,7 @@ always_comb begin
     end
 end
 
-`PRIM_FF_ARSTB(rfsm_state , rfsm_next, arstb, clk, READ_READY)
+`PRIM_FF_ARSTB(rfsm_state , rfsm_next, arstb, clk, READ_LOCKED)
 
 edge_detector #(
     .EDGE_TYPE(1) // detect rising edge

@@ -5,7 +5,9 @@ module fifo #(
     parameter ADDR_W = 5
 )(
      input  logic              wclk
+     /* verilator lint_off UNUSEDSIGNAL */
     ,input  logic              rclk
+     /* verilator lint_off UNUSEDSIGNAL */
     ,input  logic              arstb
 
     ,input  logic [DATA_W-1:0] WPORT_DATA

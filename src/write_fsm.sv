@@ -52,7 +52,10 @@ always_comb begin
         end
         default: wfsm_next = WRITE_READY;
     endcase
+end
 
+always_comb begin
+    iready   = (wfsm_state == WRITE_READY);
     write_en = (wfsm_state == WRITE_EN);
 
     wptr_ld_ps   = write_en & ivalid_pipe & isop_pipe;
@@ -63,7 +66,7 @@ always_comb begin
 end
 
 `PRIM_FF_ARSTB(wfsm_state , wfsm_next, arstb, clk, WRITE_READY)
-`PRIM_FF_ARSTB(isop_pipe  , isop     , arstb, clk, WRITE_READY)
+`PRIM_FF_ARSTB(isop_pipe  , isop     , arstb, clk, 1'b0)
 `PRIM_FF_ARSTB(ieop_pipe  , ieop     , arstb, clk, 1'b0)
 `PRIM_FF_ARSTB(ivalid_pipe, ivalid   , arstb, clk, 1'b0)
 

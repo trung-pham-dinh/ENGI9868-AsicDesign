@@ -70,11 +70,11 @@ write_fsm write_fsm (
 pointer #(
     .ADDR_W(5)
 ) write_pointer (
-    .clk       (WCLK            ), 
-    .arstb     (RSTB            ), 
-    .ptr_ld_ps (wptr_ld_ps      ), 
-    .ptr_en_lv (wptr_en_lv      ), 
-    .ptr_val   (write_pointer_lv) 
+    .clk       (WCLK         ), 
+    .arstb     (RSTB         ), 
+    .ptr_ld_ps (wptr_ld_ps   ), 
+    .ptr_en_lv (wptr_en_lv   ), 
+    .ptr_val   (WPORT_ADDR) 
 );
 
 `PRIM_FF_ARSTB(WPORT_MEB, wfifo_meb_lv, RSTB, WCLK, 1'b0)
@@ -86,7 +86,10 @@ assign WPORT_DATA = {packet_written_ps, wfifo_data};
 //----------------------------------------------------
 
 
-fifo fifo (
+fifo #(
+    .DATA_W(8+1),
+    .ADDR_W(5)
+) fifo (
     .wclk       (WCLK       ), 
     .rclk       (RCLK       ), 
     .arstb      (RSTB       ),  
@@ -102,9 +105,7 @@ fifo fifo (
     .RPORT_ADDR (RPORT_ADDR)       
 );
 
-synchronizers #(
-    .WIDTH(1)
-) synchronizers (
+synchronizers synchronizers (
     .wclk             (WCLK), 
     .rclk             (RCLK), 
     .arstb            (RSTB),  
@@ -119,7 +120,6 @@ synchronizers #(
 // Read domain
 //----------------------------------------------------
 
-logic [7:0] rfifo_data;
 logic osop_retime;
 logic oeop_retime;
 logic ovalid_retime;
@@ -134,10 +134,10 @@ pipeline #(
     .STAGE_NUM(2),
     .DATA_W(8)
 ) odata_pipeline (
-    .clk     (RCLK      ),
-    .arstb   (RSTB      ),
-    .data_in (rfifo_data),
-    .data_out(ODATA     )
+    .clk     (RCLK           ),
+    .arstb   (RSTB           ),
+    .data_in (RPORT_DATA[7:0]),
+    .data_out(ODATA          )
 );
 
 read_fsm read_fsm (
@@ -156,6 +156,7 @@ read_fsm read_fsm (
     .rptr_en_lv     (rptr_en_lv    )
 );
 
+assign packet_read_ps = RPORT_DATA[8];
 `PRIM_FF_ARSTB(rfifo_eop_ps, RPORT_DATA[8], RSTB, RCLK, 1'b0)
 `PRIM_FF_ARSTB(RPORT_MEB   , rfifo_meb_lv , RSTB, RCLK, 1'b0)
 `PRIM_FF_ARSTB(RPORT_WEB   , rfifo_web_lv , RSTB, RCLK, 1'b0)

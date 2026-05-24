@@ -2,8 +2,8 @@
 # Include *.mk for files list
 include ${PROJVAR_PROJECT_ROOT}/sim.mk
 
-TOP_SIM = counter_sim
-TOP_RTL = counter
+TOP_SIM = Design_sim
+TOP_RTL = Design
 
 lint:
 	verilator -f ${PROJVAR_PROJECT_ROOT}/verilator_config_lint.f \
