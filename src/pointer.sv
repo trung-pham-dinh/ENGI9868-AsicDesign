@@ -1,4 +1,4 @@
-`include "macro.svh"
+`include "prim.svh"
 
 module pointer #(
     parameter ADDR_W = 5

@@ -1,3 +1,5 @@
+`include "prim.svh"
+
 module Design (
      input  logic              WCLK
     ,input  logic              RCLK
@@ -24,7 +26,7 @@ logic [7+1:0] WPORT_DATA;
 logic write_rdy_lv;
 
 
-logic RPORT_MEB, RPORT_WEB, packet_read_ps;
+logic RPORT_MEB, RPORT_REB, packet_read_ps;
 logic [4:0]   RPORT_ADDR;
 logic [7+1:0] RPORT_DATA;
 logic read_rdy_lv;
@@ -34,10 +36,11 @@ logic read_rdy_lv;
 //----------------------------------------------------
 logic isop_sampled, ieop_sampled, ivalid_sampled, iready_retime;
 logic wfifo_eop_ps, wfifo_meb_lv, wfifo_web_lv, wptr_ld_ps, wptr_en_lv;
+logic wfifo_eop_ps_retime;
 logic [7:0] wfifo_data;
 
 pipeline #(
-    .STAGE_NUM(2),
+    .STAGE_NUM(3),
     .DATA_W(8)
 ) idata_pipeline (
     .clk     (WCLK      ),
@@ -77,10 +80,12 @@ pointer #(
     .ptr_val   (WPORT_ADDR) 
 );
 
-`PRIM_FF_ARSTB(WPORT_MEB, wfifo_meb_lv, RSTB, WCLK, 1'b0)
-`PRIM_FF_ARSTB(WPORT_WEB, wfifo_web_lv, RSTB, WCLK, 1'b0)
-`PRIM_FF_ARSTB(packet_written_ps, wfifo_eop_ps, RSTB, WCLK, 1'b0)
-assign WPORT_DATA = {packet_written_ps, wfifo_data};
+`PRIM_FF_ARSTB(WPORT_MEB, wfifo_meb_lv, RSTB, WCLK, 1'b1)
+`PRIM_FF_ARSTB(WPORT_WEB, wfifo_web_lv, RSTB, WCLK, 1'b1)
+`PRIM_FF_ARSTB(wfifo_eop_ps_retime, wfifo_eop_ps, RSTB, WCLK, 1'b0)
+assign WPORT_DATA = {wfifo_eop_ps_retime, wfifo_data};
+assign packet_written_ps = wfifo_eop_ps;
+
 //----------------------------------------------------
 // Domain crossing
 //----------------------------------------------------
@@ -101,7 +106,7 @@ fifo #(
 
     .RPORT_DATA (RPORT_DATA),       
     .RPORT_MEB  (RPORT_MEB ),      
-    .RPORT_WEB  (RPORT_WEB ),      
+    .RPORT_REB  (RPORT_REB ),      
     .RPORT_ADDR (RPORT_ADDR)       
 );
 
@@ -126,7 +131,7 @@ logic ovalid_retime;
 
 logic rfifo_eop_ps;
 logic rfifo_meb_lv;
-logic rfifo_web_lv;
+logic rfifo_reb_lv;
 logic rptr_ld_ps;
 logic rptr_en_lv;
 
@@ -151,15 +156,15 @@ read_fsm read_fsm (
 
     .rfifo_eop_ps   (rfifo_eop_ps  ),
     .rfifo_meb_lv   (rfifo_meb_lv  ),
-    .rfifo_web_lv   (rfifo_web_lv  ),
+    .rfifo_reb_lv   (rfifo_reb_lv  ),
     .rptr_ld_ps     (rptr_ld_ps    ),
     .rptr_en_lv     (rptr_en_lv    )
 );
 
 assign packet_read_ps = RPORT_DATA[8];
 `PRIM_FF_ARSTB(rfifo_eop_ps, RPORT_DATA[8], RSTB, RCLK, 1'b0)
-`PRIM_FF_ARSTB(RPORT_MEB   , rfifo_meb_lv , RSTB, RCLK, 1'b0)
-`PRIM_FF_ARSTB(RPORT_WEB   , rfifo_web_lv , RSTB, RCLK, 1'b0)
+`PRIM_FF_ARSTB(RPORT_MEB   , rfifo_meb_lv , RSTB, RCLK, 1'b1)
+`PRIM_FF_ARSTB(RPORT_REB   , rfifo_reb_lv , RSTB, RCLK, 1'b1)
 
 pointer #(
     .ADDR_W(5)

@@ -1,0 +1,72 @@
+`include "tlib.svh"
+
+module Design_sim;
+
+    initial begin: proc_dump_wave
+        $dumpfile("wave.vcd");
+        $dumpvars(0);
+    end
+
+    initial begin: finish
+        #900;
+        $finish;
+    end
+
+    localparam WCLK_PERIOD = 10;
+    localparam RCLK_PERIOD = 8;
+    localparam RST_PERIOD  = 2*WCLK_PERIOD;
+
+    logic       WCLK;
+    logic       RCLK;
+    logic       RSTB;
+
+    logic       ISOP=1'b0;
+    logic       IEOP=1'b0;
+    logic       IVALID=1'b0;
+    logic [7:0] IDATA='0;
+    logic       IREADY;
+
+    logic       OSOP;
+    logic       OEOP;
+    logic       OVALID;
+    logic [7:0] ODATA;
+
+
+
+    Design dut (
+        .WCLK  (WCLK  ),  
+        .RCLK  (RCLK  ),  
+        .RSTB  (RSTB  ),  
+                
+        .ISOP  (ISOP  ),  
+        .IEOP  (IEOP  ),  
+        .IVALID(IVALID),    
+        .IDATA (IDATA ),   
+        .IREADY(IREADY),    
+                
+        .OSOP  (OSOP  ),  
+        .OEOP  (OEOP  ),  
+        .OVALID(OVALID),    
+        .ODATA (ODATA )
+    );
+
+    initial task_clock_gen(WCLK, WCLK_PERIOD/2);
+    initial task_clock_gen(RCLK, RCLK_PERIOD/2);
+    initial task_resetN(RSTB, RST_PERIOD);
+
+    initial begin
+        #RST_PERIOD;
+        #1;
+        ISOP = 1'b1; IEOP = 1'b0; IVALID=1'b1; IDATA=8'hAB;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'hBC;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b1; IVALID=1'b1; IDATA=8'hCD;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
+    end
+    
+
+endmodule

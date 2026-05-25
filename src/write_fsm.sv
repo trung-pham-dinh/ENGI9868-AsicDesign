@@ -1,4 +1,4 @@
-`include "macro.svh"
+`include "prim.svh"
 
 module write_fsm #(
 )(
@@ -55,7 +55,7 @@ always_comb begin
 end
 
 always_comb begin
-    iready   = (wfsm_state == WRITE_READY);
+    iready   = ((wfsm_state == WRITE_READY) && ~isop);
     write_en = (wfsm_state == WRITE_EN);
 
     wptr_ld_ps   = write_en & ivalid_pipe & isop_pipe;

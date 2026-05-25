@@ -1,3 +1,5 @@
+`include "prim.svh"
+
 module pipeline #(
     parameter STAGE_NUM = 3,
     parameter DATA_W = 8

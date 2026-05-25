@@ -1,4 +1,4 @@
-`include "macro.svh"
+`include "prim.svh"
 
 module fifo #(
     parameter DATA_W = 8,
@@ -17,14 +17,14 @@ module fifo #(
 
     ,output logic [DATA_W-1:0] RPORT_DATA
     ,input  logic              RPORT_MEB
-    ,input  logic              RPORT_WEB
+    ,input  logic              RPORT_REB
     ,input  logic [ADDR_W-1:0] RPORT_ADDR
 );
 
 logic [DATA_W-1:0] mem [2**ADDR_W-1:0];
 logic [DATA_W-1:0] mem_next [2**ADDR_W-1:0];
 
-assign RPORT_DATA = (RPORT_MEB == 1'b0 && RPORT_WEB == 1'b0) ? mem[RPORT_ADDR] : '0;
+assign RPORT_DATA = (RPORT_MEB == 1'b0 && RPORT_REB == 1'b0) ? mem[RPORT_ADDR] : '0;
 generate
     for (genvar i = 0; i < 2**ADDR_W; i = i + 1) begin: mem_gen
         assign mem_next[i] = (WPORT_MEB == 1'b0 && WPORT_WEB == 1'b0 && WPORT_ADDR == ADDR_W'(i)) ? WPORT_DATA : mem[i];

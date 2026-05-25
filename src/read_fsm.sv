@@ -1,4 +1,4 @@
-`include "macro.svh"
+`include "prim.svh"
 
 module read_fsm #(
 )(
@@ -11,13 +11,13 @@ module read_fsm #(
 
     ,input  logic              rfifo_eop_ps
     ,output logic              rfifo_meb_lv
-    ,output logic              rfifo_web_lv
+    ,output logic              rfifo_reb_lv
     ,output logic              rptr_ld_ps
     ,output logic              rptr_en_lv
     ,input  logic              read_rdy_lv
 );
 
-typedef enum logic [0:0] {
+typedef enum logic [1:0] {
     READ_EN,
     READ_LOCKED
 } rfsm_state_t;
@@ -26,6 +26,7 @@ rfsm_state_t rfsm_state, rfsm_next;
 logic valid, valid_next;
 logic read_en_lv;
 logic read_en_ps;
+logic rptr_ld_ps_pipe;
 
 always_comb begin
     case (rfsm_state)
@@ -50,7 +51,7 @@ always_comb begin
 
     rptr_ld_ps   = read_en_ps;
     rptr_en_lv   = read_en_lv;
-    rfifo_web_lv = ~rptr_en_lv;
+    rfifo_reb_lv = ~rptr_en_lv;
     rfifo_meb_lv = ~rptr_en_lv;
 
     if (osop) begin
@@ -77,7 +78,8 @@ edge_detector #(
 
 
 `PRIM_FF_ARSTB(valid, valid_next, arstb, clk, 1'b0)
-`PRIM_FF_ARSTB(osop  , rptr_ld_ps , arstb, clk, 1'b0)
+`PRIM_FF_ARSTB(rptr_ld_ps_pipe, rptr_ld_ps , arstb, clk, 1'b0)
+`PRIM_FF_ARSTB(osop           , rptr_ld_ps_pipe , arstb, clk, 1'b0)
 assign ovalid = valid | osop;
 assign oeop = read_en_lv & rfifo_eop_ps;
 

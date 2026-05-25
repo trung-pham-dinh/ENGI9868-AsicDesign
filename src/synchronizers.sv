@@ -1,3 +1,5 @@
+`include "prim.svh"
+
 module synchronizers #(
 )(
      input  logic              wclk
@@ -46,13 +48,13 @@ edge_detector #(
     .edge_detected (packet_read_ps_sync)
 );
 
-`PRIM_FF_ARSTB(write_rdy_lv, write_rdy_lv_next, arstb, wclk, 1'b0)
+`PRIM_FF_ARSTB(write_rdy_lv, write_rdy_lv_next, arstb, wclk, 1'b1)
 
 always_comb begin
     if (~write_rdy_lv & packet_read_ps_sync) begin
         write_rdy_lv_next = 1'b1;
     end
-    else if (write_rdy_lv & packet_read_ps) begin
+    else if (write_rdy_lv & packet_written_ps) begin
         write_rdy_lv_next = 1'b0;
     end 
     else begin
