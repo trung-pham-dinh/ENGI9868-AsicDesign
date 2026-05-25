@@ -54,7 +54,10 @@ always_comb begin
     rfifo_reb_lv = ~rptr_en_lv;
     rfifo_meb_lv = ~rptr_en_lv;
 
-    if (osop) begin
+    if (osop & oeop) begin
+        valid_next = 1'b0;
+    end
+    else if (osop) begin
         valid_next = 1'b1;
     end 
     else if (oeop) begin

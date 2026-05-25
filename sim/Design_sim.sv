@@ -66,6 +66,24 @@ module Design_sim;
         ISOP = 1'b0; IEOP = 1'b1; IVALID=1'b1; IDATA=8'hCD;
         #WCLK_PERIOD;
         ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
+
+        #(2*WCLK_PERIOD);
+        while (!IREADY) @(posedge WCLK);
+
+        ISOP = 1'b1; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h12;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h23;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b1; IVALID=1'b1; IDATA=8'h34;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
+
+        #(2*WCLK_PERIOD);
+        while (!IREADY) @(posedge WCLK);
+
+        ISOP = 1'b1; IEOP = 1'b1; IVALID=1'b1; IDATA=8'h56;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
     end
     
 
