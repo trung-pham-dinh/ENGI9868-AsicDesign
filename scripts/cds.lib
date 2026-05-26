@@ -1,0 +1,22 @@
+#DEFINE cdsDefTechLib $CDS_TOP_DIR/IC/tools/dfII/etc/cdsDefTechLib
+#DEFINE basic $CDS_TOP_DIR/IC/tools.lnx86/dfII/etc/cdslib/basic
+#DEFINE analogLib $CDS_TOP_DIR/IC/tools/dfII/etc/cdslib/artist/analogLib
+#
+#DEFINE cmosp18 /CMC/kits/cmosp18/dfII_lib/cmosp18
+#DEFINE cmosp18_defin_techlib /CMC/kits/cmosp18/dfII_lib/cmosp18_defin_techlib
+#DEFINE vst_n18_sc_tsm_c4 /CMC/kits/cmosp18/VSdir/dfII_lib/vst_n18_sc_tsm_c4
+#DEFINE tpz973g /CMC/kits/cmosp18/VSdir/dfII_lib/tpz973g
+#DEFINE CMCshare /CMC/kits/cmosp18/share/sharedfII_lib/CMCshare
+#DEFINE CMCpcells /CMC/kits/cmosp18/dfII_lib/CMCpcells
+#DEFINE ahdlLib /CMC/tools/cadence/IC/tools/dfII/samples/artist/ahdlLib
+#DEFINE rfExamples $CDS_TOP_DIR/IC/tools.lnx86/dfII/samples/artist/rfExamples
+#DEFINE passiveLib $CDS_TOP_DIR/IC/tools.lnx86/dfII/samples/artist/passiveLib
+#DEFINE virage_sram /CMC/kits/cmosp18/VGdir/SRAM/dfII_lib/virage_sram
+#
+#INCLUDE $CDS_TOP_DIR/IUS08.20.024_lnx86/tools/inca/files/cds.lib
+#INCLUDE $CDS_TOP_DIR/XCELIUMMAIN20.03.008_lnx86/tools/inca/files/cds.lib
+INCLUDE $CDS_INST_DIR/tools/inca/files/cds.lib
+
+DEFINE top_level_lib ../top_level_libs/top_level_lib
+DEFINE top_level_gates_lib ../top_level_libs/top_level_gates_lib
+DEFINE top_level_testbench_lib ../top_level_libs/top_level_testbench_lib
