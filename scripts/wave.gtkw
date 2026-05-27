@@ -1,0 +1,99 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon May 25 02:03:31 2026
+[*]
+[dumpfile] "/mnt/hgfs/Shared_VMWareUbuntu/AsicDesignAssignment/wave.vcd"
+[dumpfile_mtime] "Mon May 25 01:52:31 2026"
+[dumpfile_size] 3140
+[savefile] "/mnt/hgfs/Shared_VMWareUbuntu/AsicDesignAssignment/wave.gtkw"
+[timestart] 100
+[size] 1607 491
+[pos] -27 -24
+*-4.000000 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[markername] AA
+[markername] BB
+[markername] CC
+[markername] DD
+[markername] EE
+[markername] FF
+[markername] GG
+[markername] HH
+[markername] II
+[markername] JJ
+[markername] KK
+[markername] LL
+[markername] MM
+[markername] NN
+[markername] OO
+[markername] PP
+[markername] QQ
+[markername] RR
+[markername] SS
+[markername] TT
+[markername] UU
+[markername] VV
+[markername] WW
+[markername] XX
+[markername] YY
+[markername] ZZ
+[treeopen] Design_sim.
+[treeopen] Design_sim.dut.
+[sst_width] 278
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 107
+@28
+Design_sim.RSTB
+Design_sim.WCLK
+Design_sim.ISOP
+Design_sim.IEOP
+Design_sim.IVALID
+@22
+Design_sim.IDATA[7:0]
+@28
+Design_sim.IREADY
+Design_sim.dut.isop_sampled
+Design_sim.dut.ieop_sampled
+Design_sim.dut.ivalid_sampled
+Design_sim.dut.iready_retime
+@100000028
+Design_sim.dut.write_fsm.wfsm_state[1:0]
+@28
+Design_sim.dut.wptr_ld_ps
+Design_sim.dut.wfifo_eop_ps
+Design_sim.dut.wptr_en_lv
+@22
+Design_sim.dut.WPORT_DATA[8:0]
+Design_sim.dut.WPORT_ADDR[4:0]
+@28
+Design_sim.dut.WPORT_MEB
+Design_sim.dut.WPORT_WEB
+Design_sim.dut.packet_written_ps
+Design_sim.dut.write_rdy_lv
+Design_sim.dut.packet_read_ps
+Design_sim.dut.read_rdy_lv
+Design_sim.RCLK
+@100000028
+Design_sim.dut.read_fsm.rfsm_state[1:0]
+@28
+Design_sim.dut.read_fsm.rptr_ld_ps
+Design_sim.dut.read_fsm.rptr_en_lv
+@22
+Design_sim.dut.RPORT_ADDR[4:0]
+@28
+Design_sim.dut.RPORT_MEB
+Design_sim.dut.RPORT_REB
+@22
+Design_sim.dut.RPORT_DATA[8:0]
+@28
+Design_sim.dut.rfifo_eop_ps
+@29
+Design_sim.dut.osop_retime
+@28
+Design_sim.dut.OSOP
+Design_sim.dut.OEOP
+Design_sim.dut.OVALID
+@22
+Design_sim.dut.ODATA[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
