@@ -3,14 +3,26 @@
 module Design_sim;
 
     initial begin: proc_dump_wave
+`ifdef SIMVISION_DUMP
+	$display("SIMVISION dump");
+        $shm_open("waves.shm");     // open waveform database
+        $shm_probe("AS");           // A=all signals, S=include submodules
+        
+        #900;
+        $shm_close();
+`elsif GTKW_DUMP
+	$display("GTKW dump");
         $dumpfile("wave.vcd");
         $dumpvars(0);
-    end
-
-    initial begin: finish
         #900;
+`endif
         $finish;
     end
+
+    //initial begin: finish
+    //    #1000;
+    //    $finish;
+    //end
 
     localparam WCLK_PERIOD = 10;
     localparam RCLK_PERIOD = 8;

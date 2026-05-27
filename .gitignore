@@ -1,4 +1,11 @@
 *.vcd
-*.gtkw
 *run_dir*
 *.drawio.bkp
+*.history
+.simvision
+hal.design_facts
+hal.log
+xcelium.d
+*.log
+waves.shm
+
