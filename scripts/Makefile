@@ -2,8 +2,8 @@
 # Include *.mk for files list
 include ${PROJVAR_PROJECT_ROOT}/scripts/funcsim.mk
 
-TOP_SIM = Design_sim
-TOP_RTL = Design
+TOP_SIM ?= Design_sim
+TOP_RTL ?= Design
 
 # Verilator
 
@@ -42,7 +42,7 @@ xcelium_lint:
 	hal -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f -work top_level_lib -top $(TOP_RTL) -incdir $(RTL_INCDIRS) $(RTL_SRCFILES)
 
 xcelium_wave:
-	simvision waves.shm -input simvision.svcf &
+	simvision waves.shm -input top.svcf &
 
 
 
