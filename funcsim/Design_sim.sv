@@ -69,6 +69,7 @@ module Design_sim;
     initial begin
         #RST_PERIOD;
         #1;
+        // Case 1: Discontinuous stream of words
         ISOP = 1'b1; IEOP = 1'b0; IVALID=1'b1; IDATA=8'hAB;
         #WCLK_PERIOD;
         ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
@@ -80,8 +81,9 @@ module Design_sim;
         ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
 
         #(2*WCLK_PERIOD);
-        while (!IREADY) @(posedge WCLK);
+        while (!IREADY) @(posedge WCLK); #1;
 
+        // Case 2: Continuous stream of words
         ISOP = 1'b1; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h12;
         #WCLK_PERIOD;
         ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h23;
@@ -91,9 +93,31 @@ module Design_sim;
         ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
 
         #(2*WCLK_PERIOD);
-        while (!IREADY) @(posedge WCLK);
+        while (!IREADY) @(posedge WCLK); #1;
 
+        // Case 3: Single packet with 1 word
         ISOP = 1'b1; IEOP = 1'b1; IVALID=1'b1; IDATA=8'h56;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
+
+        #(2*WCLK_PERIOD);
+        while (!IREADY) @(posedge WCLK); #1;
+
+        // Case 4: Restarting packet transfer
+        ISOP = 1'b1; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h12;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h23;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h34;
+        #WCLK_PERIOD;
+        // Restart
+        ISOP = 1'b1; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h34;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h23;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b1; IDATA=8'h12;
+        #WCLK_PERIOD;
+        ISOP = 1'b0; IEOP = 1'b1; IVALID=1'b1; IDATA=8'h01;
         #WCLK_PERIOD;
         ISOP = 1'b0; IEOP = 1'b0; IVALID=1'b0; IDATA=8'h00;
     end

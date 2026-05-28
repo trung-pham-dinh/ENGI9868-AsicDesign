@@ -14,7 +14,7 @@ verilator_lint:
 verilator_build:
 	rm -rf run_dir_verilator
 	verilator -f ${PROJVAR_PROJECT_ROOT}/scripts/verilator/verilator_config_sim.f \
-    --top $(TOP_SIM) $(RTL_SRCFILES) -I$(RTL_INCDIRS) $(SIM_SRCFILES) -D GTKW_DUMP 
+    --top $(TOP_SIM) $(RTL_SRCFILES) -I$(RTL_INCDIRS) $(SIM_SRCFILES) -DGTKW_DUMP=1 
 
 verilator_sim:
 	./run_dir_verilator/V$(TOP_SIM)
