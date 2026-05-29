@@ -42,7 +42,7 @@ xcelium_lint:
 	hal -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f -work top_level_lib -top $(TOP_RTL) -incdir $(RTL_INCDIRS) $(RTL_SRCFILES)
 
 xcelium_wave:
-	simvision waves.shm -input top.svcf &
+	simvision waves.shm -input ${TOP_SIM}.svcf &
 
 
 
