@@ -24,18 +24,23 @@ verilator_wave:
 
 # Xcelium
 
-xcelium_compile:
+xcelium_dirs:
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/top_level_libs/top_level_lib
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/top_level_libs/top_level_gates_lib
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/top_level_libs/top_level_testbench_lib
+
+xcelium_compile: xcelium_dirs
 	xmvlog -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f \
 		-work top_level_lib -incdir $(RTL_INCDIRS) $(RTL_SRCFILES)
 	xmvlog -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f \
 		-work top_level_testbench_lib -incdir $(RTL_INCDIRS) $(SIM_SRCFILES) +define+SIMVISION_DUMP
 
-xcelium_elaborate:
+xcelium_elaborate: xcelium_dirs
 	xmelab -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_elaborate.f \
 	    -work top_level_testbench_lib \
 	    top_level_testbench_lib.${TOP_SIM}
 
-xcelium_sim:
+xcelium_sim: xcelium_dirs
 	xmsim -messages top_level_testbench_lib.${TOP_SIM}
 
 xcelium_lint:

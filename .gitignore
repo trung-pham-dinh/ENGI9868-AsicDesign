@@ -8,4 +8,4 @@ hal.log
 xcelium.d
 *.log
 waves.shm
-
+*top_level_libs/*
