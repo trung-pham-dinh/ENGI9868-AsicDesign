@@ -1,0 +1,13 @@
+-- SIM2 - Normal Packets Part II
+
+-- a. Transfer 2-byte packet, IVALID never de-asserted.
+STRT
+DATA 10100000000
+DATA 01100001001
+DONE
+
+-- b. Transfer 1-byte packet
+STRT
+DATA 11100000000
+DONE
+DONE

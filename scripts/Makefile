@@ -4,6 +4,8 @@ include ${PROJVAR_PROJECT_ROOT}/scripts/funcsim.mk
 
 TOP_SIM ?= Design_sim
 TOP_RTL ?= Design
+TESTCASE_DIR = ${PROJVAR_PROJECT_ROOT}/funcsim/text_files
+TESTCASE_WAVE = waves
 
 # Verilator
 
@@ -35,19 +37,49 @@ xcelium_compile: xcelium_dirs
 	xmvlog -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f \
 		-work top_level_testbench_lib -incdir $(RTL_INCDIRS) $(SIM_SRCFILES) +define+SIMVISION_DUMP
 
-xcelium_elaborate: xcelium_dirs
+xcelium_elaborate: xcelium_compile
 	xmelab -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_elaborate.f \
 	    -work top_level_testbench_lib \
 	    top_level_testbench_lib.${TOP_SIM}
 
-xcelium_sim: xcelium_dirs
+xcelium_sim: xcelium_elaborate
 	xmsim -messages top_level_testbench_lib.${TOP_SIM}
+
+xcelium_validate_%: xcelium_elaborate
+	@echo "======================================================"
+	@echo " Running testcase: $*"
+	@echo "======================================================"
+	rm -f $(TESTCASE_DIR)/dump_data.txt   $(TESTCASE_DIR)/log.txt
+	rm -f $(TESTCASE_DIR)/source_data.txt $(TESTCASE_DIR)/expected_data.txt
+
+	touch $(TESTCASE_DIR)/source_data.txt $(TESTCASE_DIR)/expected_data.txt
+	cp $(TESTCASE_DIR)/testcases/source_data_$*.txt   $(TESTCASE_DIR)/source_data.txt
+	cp $(TESTCASE_DIR)/testcases/expected_data_$*.txt $(TESTCASE_DIR)/expected_data.txt
+	rm -rf $*.shm
+
+	xmsim -messages top_level_testbench_lib.top_level_test
+
+	cp $(TESTCASE_DIR)/log.txt        $(TESTCASE_DIR)/testcases/log_$*.txt
+	cp $(TESTCASE_DIR)/dump_data.txt  $(TESTCASE_DIR)/testcases/dump_data_$*.txt
+	mv waves.shm $*.shm
+	@echo " Testcase $* done. Result in $(TESTCASE_DIR)/testcases/log_$*.txt"
+
+#------------------------------------------------------------------------------
+# Discover all testcases by scanning for source_data_SIM*.txt
+#------------------------------------------------------------------------------
+TESTCASES := $(sort $(patsubst $(TESTCASE_DIR)/testcases/source_data_%.txt, %, \
+                 $(wildcard $(TESTCASE_DIR)/testcases/source_data_SIM*.txt)))
+ 
+#------------------------------------------------------------------------------
+# Default target: run all testcases then print a summary
+#------------------------------------------------------------------------------
+xcelium_all_test: $(addprefix xcelium_validate_, $(TESTCASES))
 
 xcelium_lint:
 	hal -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f -work top_level_lib -top $(TOP_RTL) -incdir $(RTL_INCDIRS) $(RTL_SRCFILES)
 
 xcelium_wave:
-	simvision waves.shm -input ${TOP_SIM}.svcf &
+	simvision $(TESTCASE_WAVE).shm -input ${TOP_SIM}.svcf &
 
 
 

@@ -7,5 +7,9 @@ hal.design_facts
 hal.log
 xcelium.d
 *.log
-waves.shm
+*.shm
 *top_level_libs/*
+dump_data*.txt
+log*.txt
+source_data.txt
+expected_data.txt
