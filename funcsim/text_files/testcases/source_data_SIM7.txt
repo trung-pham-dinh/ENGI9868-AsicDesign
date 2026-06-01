@@ -1,0 +1,22 @@
+-- SIM7 - Restarted Packets Part II
+
+-- a.  During transfer of 2-byte packet, assert ISOP in final byte location and re-start with a 3-byte packet that has different data. 
+STRT
+DATA 10100000000
+DATA 10100000001
+DATA 00100000010
+DATA 01100000011
+DONE
+
+-- b.  During transfer of 2-byte packet, assert ISOP in final byte location and re-start with a 2-byte packet that has different data. 
+STRT
+DATA 10100000000
+DATA 10100000001
+DATA 01100000010
+DONE
+
+-- c.  During transfer of 2-byte packet, assert ISOP in final byte location and re-start with a 1-byte packet that has different data. 
+STRT
+DATA 10100000000
+DATA 11100000001
+DONE
