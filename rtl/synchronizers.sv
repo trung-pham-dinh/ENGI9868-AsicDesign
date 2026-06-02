@@ -4,7 +4,8 @@ module synchronizers #(
 )(
      input  logic              wclk
     ,input  logic              rclk
-    ,input  logic              arstb
+    ,input  logic              arstb_wclk
+    ,input  logic              arstb_rclk
 
     ,input  logic              packet_written_ps
     ,input  logic              packet_read_ps
@@ -28,13 +29,13 @@ logic read_rdy_lv_next;
 always_comb begin
     packet_written_lv_next = (packet_written_ps) ? ~packet_written_lv : packet_written_lv;
 end
-`PRIM_FF_ARSTB(packet_written_lv, packet_written_lv_next, arstb, wclk, 1'b0)
+`PRIM_FF_ARSTB(packet_written_lv, packet_written_lv_next, arstb_wclk, wclk, 1'b0)
 
 pipeline #(
     .DATA_W(1)
 ) r2w_synchronizer (
     .clk     (wclk               ),
-    .arstb   (arstb              ),
+    .arstb   (arstb_wclk         ),
     .data_in (packet_read_lv     ),
     .data_out(packet_read_lv_sync)
 );
@@ -43,12 +44,12 @@ edge_detector #(
     .EDGE_TYPE(2) // detect rising edge
 ) r2w_edge_detector (
     .clk           (wclk               ),
-    .arstb         (arstb              ),
+    .arstb         (arstb_wclk         ),
     .signal_in     (packet_read_lv_sync),
     .edge_detected (packet_read_ps_sync)
 );
 
-`PRIM_FF_ARSTB(write_rdy_lv, write_rdy_lv_next, arstb, wclk, 1'b1)
+`PRIM_FF_ARSTB(write_rdy_lv, write_rdy_lv_next, arstb_wclk, wclk, 1'b1)
 
 always_comb begin
     if (~write_rdy_lv & packet_read_ps_sync) begin
@@ -69,13 +70,13 @@ end
 always_comb begin
     packet_read_lv_next = (packet_read_ps) ? ~packet_read_lv : packet_read_lv;
 end
-`PRIM_FF_ARSTB(packet_read_lv, packet_read_lv_next, arstb, rclk, 1'b0)
+`PRIM_FF_ARSTB(packet_read_lv, packet_read_lv_next, arstb_rclk, rclk, 1'b0)
 
 pipeline #(
     .DATA_W(1)
 ) w2r_synchronizer (
     .clk     (rclk                  ),
-    .arstb   (arstb                 ),
+    .arstb   (arstb_rclk            ),
     .data_in (packet_written_lv     ),
     .data_out(packet_written_lv_sync)
 );
@@ -84,12 +85,12 @@ edge_detector #(
     .EDGE_TYPE(2) // detect rising edge
 ) w2r_edge_detector (
     .clk           (rclk                  ),
-    .arstb         (arstb                 ),
+    .arstb         (arstb_rclk            ),
     .signal_in     (packet_written_lv_sync),
     .edge_detected (packet_written_ps_sync)
 );
 
-`PRIM_FF_ARSTB(read_rdy_lv, read_rdy_lv_next, arstb, rclk, 1'b0)
+`PRIM_FF_ARSTB(read_rdy_lv, read_rdy_lv_next, arstb_rclk, rclk, 1'b0)
 
 always_comb begin
     if (~read_rdy_lv & packet_written_ps_sync) begin

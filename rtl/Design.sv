@@ -32,6 +32,26 @@ logic [7+1:0] RPORT_DATA;
 logic read_rdy_lv;
 
 //----------------------------------------------------
+// Reset sync
+//----------------------------------------------------
+logic rstb_wsynced, rstb_rsynced;
+
+reset_synchronizer #(
+    .STAGE_NUM(2)
+) wrclk_reset_synchronizer (
+    .clk     (WCLK        ), 
+    .rstb_in (RSTB        ),     
+    .rstb_out(rstb_wsynced)      
+);
+
+reset_synchronizer #(
+    .STAGE_NUM(2)
+) rdclk_reset_synchronizer (
+    .clk     (RCLK        ), 
+    .rstb_in (RSTB        ),     
+    .rstb_out(rstb_rsynced)      
+);
+//----------------------------------------------------
 // Write domain
 //----------------------------------------------------
 logic isop_sampled, ieop_sampled, ivalid_sampled, iready_retime;
@@ -43,20 +63,20 @@ pipeline #(
     .STAGE_NUM(3),
     .DATA_W(8)
 ) idata_pipeline (
-    .clk     (WCLK      ),
-    .arstb   (RSTB      ),
-    .data_in (IDATA     ),
-    .data_out(wfifo_data)
+    .clk     (WCLK        ),
+    .arstb   (rstb_wsynced),
+    .data_in (IDATA       ),
+    .data_out(wfifo_data  )
 );
 
-`PRIM_FF_ARSTB(isop_sampled  , ISOP         , RSTB, WCLK, 1'b0)
-`PRIM_FF_ARSTB(ieop_sampled  , IEOP         , RSTB, WCLK, 1'b0)
-`PRIM_FF_ARSTB(ivalid_sampled, IVALID       , RSTB, WCLK, 1'b0)
-`PRIM_FF_ARSTB(IREADY        , iready_retime, RSTB, WCLK, 1'b0)
+`PRIM_FF_ARSTB(isop_sampled  , ISOP         , rstb_wsynced, WCLK, 1'b0)
+`PRIM_FF_ARSTB(ieop_sampled  , IEOP         , rstb_wsynced, WCLK, 1'b0)
+`PRIM_FF_ARSTB(ivalid_sampled, IVALID       , rstb_wsynced, WCLK, 1'b0)
+`PRIM_FF_ARSTB(IREADY        , iready_retime, rstb_wsynced, WCLK, 1'b0)
 
 write_fsm write_fsm (
     .clk            (WCLK          ),
-    .arstb          (RSTB          ),
+    .arstb          (rstb_wsynced  ),
     .isop           (isop_sampled  ),
     .ieop           (ieop_sampled  ),
     .ivalid         (ivalid_sampled),
@@ -74,15 +94,15 @@ pointer #(
     .ADDR_W(5)
 ) write_pointer (
     .clk       (WCLK         ), 
-    .arstb     (RSTB         ), 
+    .arstb     (rstb_wsynced ), 
     .ptr_ld_ps (wptr_ld_ps   ), 
     .ptr_en_lv (wptr_en_lv   ), 
     .ptr_val   (WPORT_ADDR) 
 );
 
-`PRIM_FF_ARSTB(WPORT_MEB, wfifo_meb_lv, RSTB, WCLK, 1'b1)
-`PRIM_FF_ARSTB(WPORT_WEB, wfifo_web_lv, RSTB, WCLK, 1'b1)
-`PRIM_FF_ARSTB(wfifo_eop_ps_retime, wfifo_eop_ps, RSTB, WCLK, 1'b0)
+`PRIM_FF_ARSTB(WPORT_MEB, wfifo_meb_lv, rstb_wsynced, WCLK, 1'b1)
+`PRIM_FF_ARSTB(WPORT_WEB, wfifo_web_lv, rstb_wsynced, WCLK, 1'b1)
+`PRIM_FF_ARSTB(wfifo_eop_ps_retime, wfifo_eop_ps, rstb_wsynced, WCLK, 1'b0)
 assign WPORT_DATA = {wfifo_eop_ps_retime, wfifo_data};
 assign packet_written_ps = wfifo_eop_ps;
 
@@ -95,9 +115,9 @@ fifo #(
     .DATA_W(8+1),
     .ADDR_W(5)
 ) fifo (
-    .wclk       (WCLK       ), 
-    .rclk       (RCLK       ), 
-    .arstb      (RSTB       ),  
+    .wclk       (WCLK        ), 
+    .rclk       (RCLK        ), 
+    .arstb      (rstb_wsynced),  
 
     .WPORT_DATA (WPORT_DATA),       
     .WPORT_MEB  (WPORT_MEB ),      
@@ -113,7 +133,8 @@ fifo #(
 synchronizers synchronizers (
     .wclk             (WCLK), 
     .rclk             (RCLK), 
-    .arstb            (RSTB),  
+    .arstb_wclk       (rstb_wsynced),  
+    .arstb_rclk       (rstb_rsynced),  
 
     .packet_written_ps(packet_written_ps),              
     .packet_read_ps   (packet_read_ps   ),           
@@ -140,14 +161,14 @@ pipeline #(
     .DATA_W(8)
 ) odata_pipeline (
     .clk     (RCLK           ),
-    .arstb   (RSTB           ),
+    .arstb   (rstb_rsynced   ),
     .data_in (RPORT_DATA[7:0]),
     .data_out(ODATA          )
 );
 
 read_fsm read_fsm (
     .clk            (RCLK          ),
-    .arstb          (RSTB          ),
+    .arstb          (rstb_rsynced  ),
     .read_rdy_lv    (read_rdy_lv   ),
 
     .osop           (osop_retime   ),
@@ -162,22 +183,22 @@ read_fsm read_fsm (
 );
 
 assign packet_read_ps = RPORT_DATA[8];
-`PRIM_FF_ARSTB(rfifo_eop_ps, RPORT_DATA[8], RSTB, RCLK, 1'b0)
-`PRIM_FF_ARSTB(RPORT_MEB   , rfifo_meb_lv , RSTB, RCLK, 1'b1)
-`PRIM_FF_ARSTB(RPORT_REB   , rfifo_reb_lv , RSTB, RCLK, 1'b1)
+`PRIM_FF_ARSTB(rfifo_eop_ps, RPORT_DATA[8], rstb_rsynced, RCLK, 1'b0)
+`PRIM_FF_ARSTB(RPORT_MEB   , rfifo_meb_lv , rstb_rsynced, RCLK, 1'b1)
+`PRIM_FF_ARSTB(RPORT_REB   , rfifo_reb_lv , rstb_rsynced, RCLK, 1'b1)
 
 pointer #(
     .ADDR_W(5)
 ) read_pointer (
-    .clk       (RCLK      ), 
-    .arstb     (RSTB      ), 
-    .ptr_ld_ps (rptr_ld_ps), 
-    .ptr_en_lv (rptr_en_lv), 
-    .ptr_val   (RPORT_ADDR) 
+    .clk       (RCLK        ), 
+    .arstb     (rstb_rsynced), 
+    .ptr_ld_ps (rptr_ld_ps  ), 
+    .ptr_en_lv (rptr_en_lv  ), 
+    .ptr_val   (RPORT_ADDR  ) 
 );
 
-`PRIM_FF_ARSTB(OSOP  , osop_retime  , RSTB, RCLK, 1'b0)
-`PRIM_FF_ARSTB(OEOP  , oeop_retime  , RSTB, RCLK, 1'b0)
-`PRIM_FF_ARSTB(OVALID, ovalid_retime, RSTB, RCLK, 1'b0)
+`PRIM_FF_ARSTB(OSOP  , osop_retime  , rstb_rsynced, RCLK, 1'b0)
+`PRIM_FF_ARSTB(OEOP  , oeop_retime  , rstb_rsynced, RCLK, 1'b0)
+`PRIM_FF_ARSTB(OVALID, ovalid_retime, rstb_rsynced, RCLK, 1'b0)
 
 endmodule
