@@ -1,4 +1,4 @@
-# SimVision Command Script (Tue Jun 02 06:10:53 PM NDT 2026)
+# SimVision Command Script (Wed Jun 03 10:36:36 AM NDT 2026)
 #
 # Version 20.03.s008
 #
@@ -21,12 +21,12 @@ preferences set plugin-enable-waveformfrequencyplot 0
 # Databases
 #
 array set dbNames ""
-set dbNames(realName1) [ database require SIM7 -hints {
-	file ./SIM7.shm/waves.trn
-	file /home/tdpham/Project/ENGI9868-AsicDesign/scripts/SIM7.shm/waves.trn
+set dbNames(realName1) [ database require SIM1 -hints {
+	file ./SIM1.shm/waves.trn
+	file /home/tdpham/Project/ENGI9868-AsicDesign/scripts/SIM1.shm/waves.trn
 }]
 if {$dbNames(realName1) == ""} {
-    set dbNames(realName1) SIM7
+    set dbNames(realName1) SIM1
 }
 
 #
@@ -42,8 +42,8 @@ mmap new  -reuse -name {Example Map} -radix %x -contents {{%b=11???? -bgcolor or
 #
 # Waveform windows
 #
-if {[catch {window new WaveWindow -name "Waveform 1" -geometry 1536x889+8+31}] != ""} {
-    window geometry "Waveform 1" 1536x889+8+31
+if {[catch {window new WaveWindow -name "Waveform 1" -geometry 1536x889+0+23}] != ""} {
+    window geometry "Waveform 1" 1536x889+0+23
 }
 window target "Waveform 1" on
 waveform using {Waveform 1}
@@ -53,7 +53,7 @@ waveform set \
     -signalnames name \
     -signalwidth 175 \
     -units ns \
-    -valuewidth 107
+    -valuewidth 34
 waveform baseline set -time 0
 
 set id [waveform add -signals [subst  {
@@ -77,7 +77,6 @@ set id [waveform add -signals [subst  {
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.IDATA[7:0]}]}
 	} ]]
-waveform hierarchy collapse $id
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.IREADY}]}
 	} ]]
@@ -97,7 +96,19 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.wfsm_state[1:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.isop_pipe}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.ieop_pipe}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.ivalid_pipe}]}
+	} ]]
+set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.wfifo_eop_ps}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.write_en}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.wptr_ld_ps}]}
@@ -172,7 +183,7 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.ODATA[7:0]}]}
 	} ]]
 
-waveform xview limits 0 250ns
+waveform xview limits 375ns 875ns
 
 #
 # Waveform Window Links
@@ -182,5 +193,5 @@ waveform xview limits 0 250ns
 # Console windows
 #
 console set -windowname Console
-window geometry Console 600x250+0+0
+window geometry Console 600x250+8+31
 

@@ -1,7 +1,7 @@
 `ifndef MACRO
 `define MACRO
 
-`define PRIM_FF_RST(OUT, IN, RST, CLK, RST_VAL='0)    \
+`define PRIM_FF_RST(OUT, IN, RST, CLK, RST_VAL)       \
     always_ff @( posedge CLK ) begin : \prim_ff_``OUT \
         if (RST) begin                                \
             OUT <= RST_VAL;                           \
@@ -11,7 +11,7 @@
         end                                           \
     end                                                 
 
-`define PRIM_FF_ARSTB(OUT, IN, ARSTB, CLK, RST_VAL='0)                \
+`define PRIM_FF_ARSTB(OUT, IN, ARSTB, CLK, RST_VAL)                   \
     always_ff @( posedge CLK or negedge ARSTB) begin : \prim_ff_``OUT \
         if (~ARSTB) begin                                             \
             OUT <= RST_VAL;                                           \
@@ -21,7 +21,7 @@
         end                                                           \
     end                                                 
 
-`define PRIM_FF_EN_RST(OUT, IN, EN, RST, CLK, RST_VAL='0) \
+`define PRIM_FF_EN_RST(OUT, IN, EN, RST, CLK, RST_VAL)    \
     always_ff @( posedge CLK ) begin : \prim_ff_``OUT     \
         if (RST) begin                                    \
             OUT <= RST_VAL;                               \

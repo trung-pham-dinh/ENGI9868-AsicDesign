@@ -1,0 +1,45 @@
+#
+# Written by : DC-Transcript, Version B-2008.09 -- Aug 25, 2008
+# Date       : Fri Apr 16 22:26:53 2010
+#
+
+#
+# Translation of script: .synopsys_dc.setup
+#
+
+#/* Canadian Microelectronics Corporation
+# * Sample .synopsys_dc.setup file, for use with CMOSP18
+# *
+# * Library and Search Path variables assume links are in place so
+# * $SYNOPSYS/cmc/cmosp18 points to the libraries in this design kit
+# * which are compiled for the proper version of Synopsys
+# */
+set designer {Lihong Zhang}
+set company {Memorial University}
+
+set search_path [list .]
+set search_path [concat  $search_path [list [format "%s%s"  $synopsys_root /libraries/syn]]]
+set search_path [concat  $search_path [list [format "%s%s"  /CMC/kits/cmosp18/synopsys/2004 /syn]]]
+set search_path [concat  $search_path ../macro]
+
+
+set link_library {tpz973gwc.db vst_n18_sc_tsm_c4_wc.db *}
+set target_library [list tpz973gwc.db vst_n18_sc_tsm_c4_wc.db]
+set symbol_library [list]
+
+#/* Assume there is a ./Work directory */
+define_design_lib top_level_lib -path ../top_level_libs/top_level_lib
+
+
+#/* Try and make names compatible with Cadence dfII, from Preview man. */
+#set bus_naming_style "%s_%d_"
+set bus_naming_style {%s[%d]}
+set verilogout_no_tri "true"
+define_name_rules preview -allowed "A-Za-z0-9_"
+#/* Preview man. page says set the verilogout_single_bit = true, but to
+#   get the sram cells to work you may need false. */
+set verilogout_single_bit "true"
+
+
+#/* Some usefull scripts. */
+set view_script_submenu_items [list {Remove All Designs} {remove_design find(design "*")} {Save All Designs} {write find(design "*") -out save.db} {set_dont_touch All Designs} {set_dont_touch find(design "*")} {Remove dont_touch All Designs} {remove_attribute find(design "*") dont_touch} {Remove Unconnected Ports} {remove_unconnected_ports -blast_buses find(-hierarchy cell, "*")} {Fix Multiple Ports (on selected hierarchy)} {set_fix_multiple_port_nets -all} {Change Names for Preview} {change_names -rules preview -hierarchy > change_names.out}]

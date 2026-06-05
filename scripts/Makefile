@@ -4,6 +4,7 @@ include ${PROJVAR_PROJECT_ROOT}/scripts/funcsim.mk
 
 TOP_SIM ?= Design_sim
 TOP_RTL ?= Design
+TOP_SYNTH ?= write_fsm
 TESTCASE_DIR = ${PROJVAR_PROJECT_ROOT}/funcsim/text_files
 TESTCASE_WAVE = waves
 
@@ -26,12 +27,16 @@ verilator_wave:
 
 # Xcelium
 
-xcelium_dirs:
+make_dirs:
 	mkdir -p ${PROJVAR_PROJECT_ROOT}/top_level_libs/top_level_lib
 	mkdir -p ${PROJVAR_PROJECT_ROOT}/top_level_libs/top_level_gates_lib
 	mkdir -p ${PROJVAR_PROJECT_ROOT}/top_level_libs/top_level_testbench_lib
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/syn/work/
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/syn/reports/
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/syn/db/
+	mkdir -p ${PROJVAR_PROJECT_ROOT}/gates
 
-xcelium_compile: xcelium_dirs
+xcelium_compile: make_dirs
 	xmvlog -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f \
 		-work top_level_lib -incdir $(RTL_INCDIRS) $(RTL_SRCFILES)
 	xmvlog -f ${PROJVAR_PROJECT_ROOT}/scripts/xcelium/xcelium_config_compile.f \
@@ -81,6 +86,9 @@ xcelium_lint:
 xcelium_wave:
 	simvision $(TESTCASE_WAVE).shm -input ${TOP_SIM}.svcf &
 
+# Synopsys DC:
+synopsys_synth: make_dirs
+	dc_shell -f ../syn/${TOP_SYNTH}.dctcl | tee ../syn/${TOP_SYNTH}.log
 
 
 clean:
