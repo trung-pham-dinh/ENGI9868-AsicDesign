@@ -7,34 +7,55 @@ foreach f $RTL_SRCFILES {
 
 elaborate read_fsm -library top_level_lib
 
+#------------------------------------------------------------------------------
+# Wire load
+#------------------------------------------------------------------------------
+
 set_wire_load_mode top
 set_wire_load_model -name TSMC8K_Conservative
 
+#------------------------------------------------------------------------------
+# Design rule constraints
+#------------------------------------------------------------------------------
 set_max_transition 1.5 [find design]
 set_max_capacitance 1.5 [find design]
 set_max_fanout 15 [find design]
 set_max_area 0
 
+#------------------------------------------------------------------------------
+# Clocks
+#------------------------------------------------------------------------------
 create_clock -period 8 -name clk [find port clk]
 set_drive 0 [find port clk]
 set_dont_touch_network [find port clk]
 set_resistance 0 [find net clk]
 set_clock_uncertainty 0.350 [find clock clk]
 
+#------------------------------------------------------------------------------
+# Resets
+#------------------------------------------------------------------------------
 set_drive 0 [find port arstb]
 set_dont_touch_network [find port arstb]
 set_resistance 0 [find net arstb]
 set_ideal_network -no_propagate [find net arstb]
 
+#------------------------------------------------------------------------------
+# Input constraints
+#------------------------------------------------------------------------------
 set_input_delay -max 2 -clock clk [list [remove_from_collection [all_inputs] [find port clk]]]
 set_input_delay -min 0 -clock clk [list [remove_from_collection [all_inputs] [find port clk]]]
+set_driving_cell -lib_cell BUFD1 [list [remove_from_collection [remove_from_collection [all_inputs] [find port clk]] [find port arstb]]]
+#------------------------------------------------------------------------------
+# Output constraints
+#------------------------------------------------------------------------------
 set_output_delay -max 5 -clock clk [all_outputs]
 set_output_delay -min 0 -clock clk [all_outputs]
 
-set_driving_cell -lib_cell BUFD1 [list [remove_from_collection [remove_from_collection [all_inputs] [find port clk]] [find port arstb]]]
-set_load 2.0 [all_outputs]
+set_load 1.0 [all_outputs] # 2.0 initially
 
-
+#------------------------------------------------------------------------------
+# Pre-compile reports
+#------------------------------------------------------------------------------
 report_port -verbose
 report_design
 report_constraint
@@ -42,17 +63,26 @@ report_clock
 report_attribute -design
 report_timing
 
+#------------------------------------------------------------------------------
+# Compile
+#------------------------------------------------------------------------------
 compile -map_effort medium
 
 set_fix_hold [find clock clk]
 compile -map_effort high -prioritize_min_paths -only_design_rule -incremental
 
+#------------------------------------------------------------------------------
+# Post-compile reports
+#------------------------------------------------------------------------------
 redirect         ../syn/reports/read_fsm.rpt { report_area }
 redirect -append ../syn/reports/read_fsm.rpt { report_reference }
 redirect -append ../syn/reports/read_fsm.rpt { report_constraint -all_violators }
 redirect -append ../syn/reports/read_fsm.rpt { report_timing -path end }
 redirect -append ../syn/reports/read_fsm.rpt { check_design }
 
+#------------------------------------------------------------------------------
+# Write outputs
+#------------------------------------------------------------------------------
 write -hierarchy -format ddc -output ../syn/db/read_fsm_gates.ddc
 
 change_names -rules verilog

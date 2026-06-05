@@ -1,11 +1,11 @@
-#analyze -format sverilog ../rtl/write_fsm.sv -library top_level_lib
+#analyze -format sverilog ../rtl/read_fsm.sv -library top_level_lib
 
 source dc_srcs.tcl
 foreach f $RTL_SRCFILES {
     analyze -format sverilog -library top_level_lib $f
 }
 
-elaborate write_fsm -library top_level_lib
+elaborate pointer -library top_level_lib
 
 #------------------------------------------------------------------------------
 # Wire load
@@ -24,7 +24,7 @@ set_max_area 0
 #------------------------------------------------------------------------------
 # Clocks
 #------------------------------------------------------------------------------
-create_clock -period 10 -name clk [find port clk]
+create_clock -period ${CLK_PERIOD} -name clk [find port clk]
 set_drive 0 [find port clk]
 set_dont_touch_network [find port clk]
 set_resistance 0 [find net clk]
@@ -52,6 +52,7 @@ set_output_delay -min 0 -clock clk [all_outputs]
 
 set_load 1.0 [all_outputs] # 2.0 initially
 
+
 #------------------------------------------------------------------------------
 # Pre-compile reports
 #------------------------------------------------------------------------------
@@ -73,18 +74,20 @@ compile -map_effort high -prioritize_min_paths -only_design_rule -incremental
 #------------------------------------------------------------------------------
 # Post-compile reports
 #------------------------------------------------------------------------------
-redirect         ../syn/reports/write_fsm.rpt { report_area }
-redirect -append ../syn/reports/write_fsm.rpt { report_reference }
-redirect -append ../syn/reports/write_fsm.rpt { report_constraint -all_violators }
-redirect -append ../syn/reports/write_fsm.rpt { report_timing -path end }
-redirect -append ../syn/reports/write_fsm.rpt { check_design }
+redirect         ../syn/reports/${INSTANCE}.rpt { report_area }
+redirect -append ../syn/reports/${INSTANCE}.rpt { report_reference }
+redirect -append ../syn/reports/${INSTANCE}.rpt { report_constraint -all_violators }
+redirect -append ../syn/reports/${INSTANCE}.rpt { report_timing -path end }
+redirect -append ../syn/reports/${INSTANCE}.rpt { check_design }
 
 #------------------------------------------------------------------------------
 # Write outputs
 #------------------------------------------------------------------------------
-write -hierarchy -format ddc -output ../syn/db/write_fsm_gates.ddc
+rename_design pointer ${INSTANCE}
+
+write -hierarchy -format ddc -output ../syn/db/${INSTANCE}_gates.ddc
 
 change_names -rules verilog
-write -hierarchy -format verilog -output ../gates/write_fsm_gates.v
+write -hierarchy -format verilog -output ../gates/${INSTANCE}_gates.v
 
 quit
