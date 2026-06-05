@@ -79,7 +79,7 @@ set_output_delay -min 0 -clock wclk [get_ports {write_rdy_lv}]
 set_output_delay -max 5 -clock rclk [get_ports {read_rdy_lv}]
 set_output_delay -min 0 -clock rclk [get_ports {read_rdy_lv}]
 
-set_load 2.0 [all_outputs]
+set_load 1.0 [all_outputs] # 2.0 initially
 
 #------------------------------------------------------------------------------
 # Pre-compile reports
@@ -102,17 +102,17 @@ compile -map_effort high -prioritize_min_paths -only_design_rule -incremental
 #------------------------------------------------------------------------------
 # Post-compile reports
 #------------------------------------------------------------------------------
-redirect         ./synchronizers.rpt { report_area }
-redirect -append ./synchronizers.rpt { report_reference }
-redirect -append ./synchronizers.rpt { report_constraint -all_violators }
-redirect -append ./synchronizers.rpt { report_timing -path end }
-redirect -append ./synchronizers.rpt { check_design }
+redirect         ../syn/reports/synchronizers.rpt { report_area }
+redirect -append ../syn/reports/synchronizers.rpt { report_reference }
+redirect -append ../syn/reports/synchronizers.rpt { report_constraint -all_violators }
+redirect -append ../syn/reports/synchronizers.rpt { report_timing -path end }
+redirect -append ../syn/reports/synchronizers.rpt { check_design }
 
 #------------------------------------------------------------------------------
 # Write outputs
 #------------------------------------------------------------------------------
-write -hierarchy -format ddc     -output ./synchronizers_gate.ddc
+write -hierarchy -format ddc     -output ../syn/db/synchronizers_gates.ddc
 change_names -rules verilog
-write -hierarchy -format verilog -output ./synchronizers_gate.v
+write -hierarchy -format verilog -output ../gates/synchronizers_gates.v
 
 quit
