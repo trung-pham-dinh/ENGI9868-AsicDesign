@@ -87,9 +87,12 @@ xcelium_wave:
 	simvision $(TESTCASE_WAVE).shm -input ${TOP_SIM}.svcf &
 
 # Synopsys DC:
-synopsys_synth: make_dirs
-	dc_shell -f ../syn/${TOP_SYNTH}.dctcl | tee ../syn/${TOP_SYNTH}.log
+dc_srcs.tcl:
+	@echo "set search_path [concat \$$search_path $(RTL_INCDIRS)]" > $@
+	@echo "set RTL_SRCFILES {$(RTL_SRCFILES)}" >> $@
 
+synopsys_synth: dc_srcs.tcl make_dirs
+	dc_shell -f ../syn/${TOP_SYNTH}.dctcl | tee ../syn/${TOP_SYNTH}.log
 
 clean:
 	rm -rf run_dir_verilator

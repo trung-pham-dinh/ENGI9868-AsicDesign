@@ -72,7 +72,7 @@ end
 
 edge_detector #(
     .EDGE_TYPE(1) // detect rising edge
-) _edge_detector (
+) edge_detector (
     .clk          (clk       ),
     .arstb        (arstb     ),
     .signal_in    (read_en_lv),

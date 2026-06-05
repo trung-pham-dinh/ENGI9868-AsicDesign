@@ -1,11 +1,11 @@
-#analyze -format sverilog ../rtl/write_fsm.sv -library top_level_lib
+#analyze -format sverilog ../rtl/read_fsm.sv -library top_level_lib
 
 source dc_srcs.tcl
 foreach f $RTL_SRCFILES {
     analyze -format sverilog -library top_level_lib $f
 }
 
-elaborate write_fsm -library top_level_lib
+elaborate read_fsm -library top_level_lib
 
 set_wire_load_mode top
 set_wire_load_model -name TSMC8K_Conservative
@@ -47,15 +47,15 @@ compile -map_effort medium
 set_fix_hold [find clock clk]
 compile -map_effort high -prioritize_min_paths -only_design_rule -incremental
 
-redirect         ../syn/reports/write_fsm.rpt { report_area }
-redirect -append ../syn/reports/write_fsm.rpt { report_reference }
-redirect -append ../syn/reports/write_fsm.rpt { report_constraint -all_violators }
-redirect -append ../syn/reports/write_fsm.rpt { report_timing -path end }
-redirect -append ../syn/reports/write_fsm.rpt { check_design }
+redirect         ../syn/reports/read_fsm.rpt { report_area }
+redirect -append ../syn/reports/read_fsm.rpt { report_reference }
+redirect -append ../syn/reports/read_fsm.rpt { report_constraint -all_violators }
+redirect -append ../syn/reports/read_fsm.rpt { report_timing -path end }
+redirect -append ../syn/reports/read_fsm.rpt { check_design }
 
-write -hierarchy -format ddc -output ../syn/db/write_fsm_gates.ddc
+write -hierarchy -format ddc -output ../syn/db/read_fsm_gates.ddc
 
 change_names -rules verilog
-write -hierarchy -format verilog -output ../gates/write_fsm_gates.v
+write -hierarchy -format verilog -output ../gates/read_fsm_gates.v
 
 quit

@@ -1,3 +1,4 @@
+`include "prim.svh"
 module edge_detector #(
     parameter EDGE_TYPE = 0 // 1: rising edge, 0: falling edge: 2: both edge
 ) (
