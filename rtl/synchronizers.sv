@@ -32,7 +32,8 @@ end
 `PRIM_FF_ARSTB(packet_written_lv, packet_written_lv_next, arstb_wclk, wclk, 1'b0)
 
 pipeline #(
-    .DATA_W(1)
+    .DATA_W(1),
+    .STAGE_NUM(2)
 ) r2w_synchronizer (
     .clk     (wclk               ),
     .arstb   (arstb_wclk         ),
@@ -41,7 +42,7 @@ pipeline #(
 );
 
 edge_detector #(
-    .EDGE_TYPE(2) // detect rising edge
+    .EDGE_TYPE(2)
 ) r2w_edge_detector (
     .clk           (wclk               ),
     .arstb         (arstb_wclk         ),
@@ -73,7 +74,8 @@ end
 `PRIM_FF_ARSTB(packet_read_lv, packet_read_lv_next, arstb_rclk, rclk, 1'b0)
 
 pipeline #(
-    .DATA_W(1)
+    .DATA_W(1),
+    .STAGE_NUM(2)
 ) w2r_synchronizer (
     .clk     (rclk                  ),
     .arstb   (arstb_rclk            ),
@@ -82,7 +84,7 @@ pipeline #(
 );
 
 edge_detector #(
-    .EDGE_TYPE(2) // detect rising edge
+    .EDGE_TYPE(2)
 ) w2r_edge_detector (
     .clk           (rclk                  ),
     .arstb         (arstb_rclk            ),

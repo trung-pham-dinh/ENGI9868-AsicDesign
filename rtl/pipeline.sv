@@ -1,7 +1,7 @@
 `include "prim.svh"
 
 module pipeline #(
-    parameter STAGE_NUM = 3,
+    parameter STAGE_NUM = 2,
     parameter DATA_W = 8
 )(
      input  logic              clk

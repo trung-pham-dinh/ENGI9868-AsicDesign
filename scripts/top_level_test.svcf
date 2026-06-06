@@ -1,4 +1,4 @@
-# SimVision Command Script (Wed Jun 03 10:36:36 AM NDT 2026)
+# SimVision Command Script (Sat Jun 06 04:32:48 PM NDT 2026)
 #
 # Version 20.03.s008
 #
@@ -42,8 +42,8 @@ mmap new  -reuse -name {Example Map} -radix %x -contents {{%b=11???? -bgcolor or
 #
 # Waveform windows
 #
-if {[catch {window new WaveWindow -name "Waveform 1" -geometry 1536x889+0+23}] != ""} {
-    window geometry "Waveform 1" 1536x889+0+23
+if {[catch {window new WaveWindow -name "Waveform 1" -geometry 766x880+1+31}] != ""} {
+    window geometry "Waveform 1" 766x880+1+31
 }
 window target "Waveform 1" on
 waveform using {Waveform 1}
@@ -61,9 +61,6 @@ set id [waveform add -signals [subst  {
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.rstb_wsynced}]}
-	} ]]
-set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.WCLK}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.ISOP}]}
@@ -129,19 +126,40 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.WPORT_WEB}]}
 	} ]]
 set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.WCLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.packet_written_ps}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_rdy_lv}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_written_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.packet_read_ps}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.RCLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_written_lv_sync}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_written_ps_sync}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.read_rdy_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.RCLK}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.packet_read_ps}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_lv}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_lv_sync}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_ps_sync}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.write_rdy_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.rstb_rsynced}]}
@@ -183,7 +201,7 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.ODATA[7:0]}]}
 	} ]]
 
-waveform xview limits 375ns 875ns
+waveform xview limits 219.08ns 330.16ns
 
 #
 # Waveform Window Links
