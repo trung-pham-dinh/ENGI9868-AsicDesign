@@ -13,3 +13,7 @@ dump_data*.txt
 log*.txt
 source_data.txt
 expected_data.txt
+gates/
+*.svf
+syn/db/*
+syn/reports/*

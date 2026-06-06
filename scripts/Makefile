@@ -92,7 +92,10 @@ dc_srcs.tcl:
 	@echo "set RTL_SRCFILES {$(RTL_SRCFILES)}" >> $@
 
 synopsys_synth: dc_srcs.tcl make_dirs
-	dc_shell -f ../syn/${TOP_SYNTH}.dctcl | tee ../syn/${TOP_SYNTH}.log
+	dc_shell -f ../syn/read_fsm.dctcl      | tee ../syn/read_fsm.log
+	dc_shell -f ../syn/write_fsm.dctcl     | tee ../syn/write_fsm.log
+	dc_shell -f ../syn/synchronizers.dctcl | tee ../syn/synchronizers.log
+	dc_shell -f ../syn/Design.dctcl        | tee ../syn/Design.log
 
 clean:
 	rm -rf run_dir_verilator
