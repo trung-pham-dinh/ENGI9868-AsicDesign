@@ -1,3 +1,0 @@
-set CLK_PERIOD 8
-set INSTANCE   "read_pointer"
-source ../syn/pointer.dctcl
