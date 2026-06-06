@@ -1,0 +1,138 @@
+#------------------------------------------------------------------------------
+# Read pre-synthesized sub-blocks
+#------------------------------------------------------------------------------
+read_file -format ddc -library top_level_lib ../syn/db/write_fsm_gates.ddc
+read_file -format ddc -library top_level_lib ../syn/db/read_fsm_gates.ddc
+read_file -format ddc -library top_level_lib ../syn/db/synchronizers_gates.ddc
+
+#------------------------------------------------------------------------------
+# Analyze and elaborate top level
+# (pipeline, reset_synchronizer will be compiled from RTL here)
+#------------------------------------------------------------------------------
+set TOP_SRCFILES {
+    ../rtl/Design.sv
+    ../rtl/pipeline.sv
+    ../rtl/reset_synchronizer.sv
+    ../rtl/fifo.sv
+    ../rtl/pointer.sv
+}
+
+foreach f $TOP_SRCFILES {
+    analyze -format sverilog -library top_level_lib $f
+}
+
+elaborate Design -library top_level_lib
+current_design Design
+link
+
+#------------------------------------------------------------------------------
+# Dont-touch pre-synthesized sub-blocks
+#------------------------------------------------------------------------------
+set_dont_touch [find design write_fsm]
+set_dont_touch [find design read_fsm]
+set_dont_touch [find design synchronizers]
+
+#------------------------------------------------------------------------------
+# Wire load
+#------------------------------------------------------------------------------
+set_wire_load_mode top
+set_wire_load_model -name TSMC8K_Conservative
+
+#------------------------------------------------------------------------------
+# Design rule constraints
+#------------------------------------------------------------------------------
+set_max_transition  1.5 [find design Design]
+set_max_capacitance 1.5 [find design Design]
+set_max_fanout      15  [find design Design]
+set_max_area        0
+
+#------------------------------------------------------------------------------
+# Clocks
+#------------------------------------------------------------------------------
+create_clock -period 8  -name WCLK [find port WCLK]
+set_drive 0 [find port WCLK]
+set_dont_touch_network [find port WCLK]
+set_resistance 0 [find net WCLK]
+set_clock_uncertainty 0.350 [find clock WCLK]
+
+create_clock -period 10 -name RCLK [find port RCLK]
+set_drive 0 [find port RCLK]
+set_dont_touch_network [find port RCLK]
+set_resistance 0 [find net RCLK]
+set_clock_uncertainty 0.350 [find clock RCLK]
+
+set_clock_groups -asynchronous \
+    -group [get_clocks WCLK] \
+    -group [get_clocks RCLK]
+
+#------------------------------------------------------------------------------
+# Reset
+#------------------------------------------------------------------------------
+set_drive 0 [find port RSTB]
+set_dont_touch_network [find port RSTB]
+set_ideal_network -no_propagate [find net RSTB]
+
+#------------------------------------------------------------------------------
+# Input constraints (write-domain inputs, constrained to WCLK)
+#------------------------------------------------------------------------------
+set wclk_inputs [get_ports {ISOP IEOP IVALID IDATA}]
+set_input_delay -max 2 -clock WCLK $wclk_inputs
+set_input_delay -min 0 -clock WCLK $wclk_inputs
+set_driving_cell -lib_cell BUFD1 $wclk_inputs
+
+#------------------------------------------------------------------------------
+# Output constraints
+#------------------------------------------------------------------------------
+# Write-domain output
+set_output_delay -max 5 -clock WCLK [get_ports IREADY]
+set_output_delay -min 0 -clock WCLK [get_ports IREADY]
+
+# Read-domain outputs
+set rclk_outputs [get_ports {OSOP OEOP OVALID ODATA}]
+set_output_delay -max 5 -clock RCLK $rclk_outputs
+set_output_delay -min 0 -clock RCLK $rclk_outputs
+
+# 2.0 initially
+set_load 1.0 [all_outputs]
+
+#------------------------------------------------------------------------------
+# Pre-compile reports
+#------------------------------------------------------------------------------
+report_port -verbose
+report_design
+report_constraint
+report_clock
+report_timing
+
+#------------------------------------------------------------------------------
+# Compile
+#------------------------------------------------------------------------------
+compile -map_effort medium
+
+set_fix_hold [find clock WCLK]
+set_fix_hold [find clock RCLK]
+compile -map_effort high -prioritize_min_paths -only_design_rule -incremental
+
+#------------------------------------------------------------------------------
+# False path
+#------------------------------------------------------------------------------
+set_false_path -from [find clock WCLK] -to [find clock RCLK]
+set_false_path -from [find clock RCLK] -to [find clock WCLK]
+
+#------------------------------------------------------------------------------
+# Post-compile reports
+#------------------------------------------------------------------------------
+redirect         ../syn/reports/Design.rpt { report_area }
+redirect -append ../syn/reports/Design.rpt { report_reference }
+redirect -append ../syn/reports/Design.rpt { report_constraint -all_violators }
+redirect -append ../syn/reports/Design.rpt { report_timing -path end }
+redirect -append ../syn/reports/Design.rpt { check_design }
+
+#------------------------------------------------------------------------------
+# Write outputs
+#------------------------------------------------------------------------------
+write -hierarchy -format ddc     -output ../syn/db/Design_gate.ddc
+change_names -rules verilog
+write -hierarchy -format verilog -output ../gates/Design_gate.v
+
+quit

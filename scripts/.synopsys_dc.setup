@@ -43,3 +43,10 @@ set verilogout_single_bit "true"
 
 #/* Some usefull scripts. */
 set view_script_submenu_items [list {Remove All Designs} {remove_design find(design "*")} {Save All Designs} {write find(design "*") -out save.db} {set_dont_touch All Designs} {set_dont_touch find(design "*")} {Remove dont_touch All Designs} {remove_attribute find(design "*") dont_touch} {Remove Unconnected Ports} {remove_unconnected_ports -blast_buses find(-hierarchy cell, "*")} {Fix Multiple Ports (on selected hierarchy)} {set_fix_multiple_port_nets -all} {Change Names for Preview} {change_names -rules preview -hierarchy > change_names.out}]
+
+# Two output signals are connected to the same value - intentionally
+suppress_message LINT-31 
+# A pin on submodule is connected to 1'b1 - intentionally
+suppress_message LINT-32 
+# rclk is not connected - intentionally
+suppress_message LINT-28

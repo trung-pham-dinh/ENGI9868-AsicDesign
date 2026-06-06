@@ -2,7 +2,7 @@
 # Include *.mk for files list
 include ${PROJVAR_PROJECT_ROOT}/scripts/funcsim.mk
 
-TOP_SIM ?= Design_sim
+TOP_SIM ?= top_level_test
 TOP_RTL ?= Design
 TOP_SYNTH ?= write_fsm
 TESTCASE_DIR = ${PROJVAR_PROJECT_ROOT}/funcsim/text_files

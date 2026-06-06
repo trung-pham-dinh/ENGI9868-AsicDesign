@@ -1,0 +1,57 @@
+
+analyze -format vhdl -library WORK ./wpointer.vhd
+elaborate wpointer -architecture behav -library WORK
+set_wire_load_mode top
+set_wire_load_model -name TSMC8K_Conservative
+set_max_transition 1.5 [find design]
+set_max_capacitance 1.5 [find design]
+set_max_fanout 15 [find design]
+set_max_area 0
+create_clock -period 8 -name wclk [find port wclk]
+set_drive 0 [find port wclk]
+set_dont_touch_network [find port wclk]
+set_resistance 0 [find net wclk]
+set_clock_uncertainty 0.350 [find clock wclk]
+set_drive 0 [find port rstb]
+set_dont_touch_network [find port rstb]
+set_resistance 0 [find net rstb]
+set_ideal_net [find net rstb]
+
+set_load 2.0 [all_outputs]
+report_port -verbose
+report_design
+report_constraint
+report_clock
+report_attribute -design
+report_timing
+compile -map_effort medium
+
+set_fix_hold [find clock wclk]
+compile -map_effort high -prioritize_min_paths -only_design_rule -incremental
+
+redirect ./wpointer.rpt { report_area }
+redirect -append ./wpointer.rpt { report_reference }
+redirect -append ./wpointer.rpt { report_constraint -all_violators }
+redirect -append ./wpointer.rpt { report_timing -path end }
+redirect -append ./wpointer.rpt { check_design }
+
+
+write -hierarchy -format ddc -output ./wpointer.ddc
+
+set vhdlout_write_entity true
+set vhdlout_write_architecture true
+set vhdlout_architecture gates
+set vhdlout_preserve_hierarchical_types vector
+set vhdlout_follow_vector_direction true
+change_names -rules vhdl
+
+write -hierarchy -format vhdl -output ./wpointer_gate.vhd
+change_names -rules verilog
+write -hierarchy -format verilog -output ./wpointer_gate.v
+
+quit
+
+
+
+
+
