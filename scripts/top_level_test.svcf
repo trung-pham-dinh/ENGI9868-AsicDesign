@@ -1,4 +1,4 @@
-# SimVision Command Script (Sat Jun 06 04:32:48 PM NDT 2026)
+# SimVision Command Script (Thu Jun 11 03:26:08 PM NDT 2026)
 #
 # Version 20.03.s008
 #
@@ -42,8 +42,8 @@ mmap new  -reuse -name {Example Map} -radix %x -contents {{%b=11???? -bgcolor or
 #
 # Waveform windows
 #
-if {[catch {window new WaveWindow -name "Waveform 1" -geometry 766x880+1+31}] != ""} {
-    window geometry "Waveform 1" 766x880+1+31
+if {[catch {window new WaveWindow -name "Waveform 1" -geometry 1536x889+0+23}] != ""} {
+    window geometry "Waveform 1" 1536x889+0+23
 }
 window target "Waveform 1" on
 waveform using {Waveform 1}
@@ -78,40 +78,40 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.IREADY}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.isop_sampled}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.isop_sampled}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.ieop_sampled}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.ieop_sampled}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.ivalid_sampled}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.ivalid_sampled}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.iready_retime}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.iready_retime}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.wfsm_state[1:0]}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.write_fsm.wfsm_state[1:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.isop_pipe}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.write_fsm.isop_pipe}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.ieop_pipe}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.write_fsm.ieop_pipe}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.ivalid_pipe}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.write_fsm.ivalid_pipe}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.wfifo_eop_ps}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.write_fsm.wfifo_eop_ps}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_fsm.write_en}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.write_fsm.write_en}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.wptr_ld_ps}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.wptr_ld_ps}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.wptr_en_lv}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.wclk_domain.wptr_en_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.WPORT_DATA[8:0]}]}
@@ -135,6 +135,15 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_written_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.write_rdy_lv}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_ps_sync}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_lv_sync}]}
+	} ]]
+set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.RCLK}]}
 	} ]]
 set id [waveform add -signals [subst  {
@@ -147,31 +156,22 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.read_rdy_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.packet_read_ps}]}
-	} ]]
-set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_lv_sync}]}
-	} ]]
-set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.synchronizers.packet_read_ps_sync}]}
-	} ]]
-set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.write_rdy_lv}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.packet_read_ps}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.rstb_rsynced}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.read_fsm.rfsm_state[1:0]}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.rdclk_domain.read_fsm.rfsm_state[1:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.rptr_ld_ps}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.rdclk_domain.read_fsm.rptr_ld_ps}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.rptr_en_lv}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.rdclk_domain.read_fsm.rptr_en_lv}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.RPORT_ADDR[4:0]}]}
@@ -186,7 +186,7 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.RPORT_DATA[8:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{$dbNames(realName1)::[format {top_level_test.dut.rfifo_eop_ps}]}
+	{$dbNames(realName1)::[format {top_level_test.dut.rdclk_domain.read_fsm.rfifo_eop_ps}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.OSOP}]}
@@ -201,7 +201,7 @@ set id [waveform add -signals [subst  {
 	{$dbNames(realName1)::[format {top_level_test.dut.ODATA[7:0]}]}
 	} ]]
 
-waveform xview limits 219.08ns 330.16ns
+waveform xview limits 100.314ns 322.474ns
 
 #
 # Waveform Window Links
