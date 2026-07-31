@@ -85,7 +85,7 @@ DATA 00100011101
 DATA 01100011110
 DONE
 
--- c. Transfer 31-byte packet, IVALID never de-asserted.
+-- c. Transfer 3-byte packet, IVALID never de-asserted.
 STRT
 DATA 10100000000
 DATA 00100000001
